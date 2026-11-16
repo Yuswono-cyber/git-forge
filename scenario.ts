@@ -7,11 +7,11 @@
 //   1. the env listens (MAKEFUN_ENV_HOST / MAKEFUN_ENV_PORT, 8080 in a container), writes /state/ready,
 //      and waits for the entry's first register;
 //   2. the entry binds its own ephemeral port (listen(0)), then POSTs $MAKEFUN_ENV_URL/register with
-//      {"port": N}. The env records req.socket.remoteAddress:N as the entry's base URL and dials it from
+//      {\"port\": N}. The env records req.socket.remoteAddress:N as the entry's base URL and dials it from
 //      then on. The first register wins; a later one is answered 409 and does not move the base URL;
 //   3. the entry long-polls GET $MAKEFUN_ENV_URL/done. Until the suite is over the env answers
-//      {"done": false} at once (within DONE_ANSWER_DEADLINE_MS, never holding a request); once the
-//      export is written it answers {"done": true}, and the entry exits 0. The harness then SIGTERMs
+//      {\"done\": false} at once (within DONE_ANSWER_DEADLINE_MS, never holding a request); once the
+//      export is written it answers {\"done\": true}, and the entry exits 0. The harness then SIGTERMs
 //      the env, which writes (or keeps) its export and exits;
 //   4. the env's suite runs in four phases: boot (the entry's GET /healthz twice within
 //      HEALTHZ_BUDGET_MS), conformance (every check, one at a time), benchmark (four workloads), and
@@ -25,7 +25,7 @@
 //
 // Files this contract owns, under the env's state directory (MAKEFUN_STATE_DIR outside a container,
 // /state inside one):
-//   ready                 {"schema":"github-core-clone-01/ready/v1","host":…,"port":…}, written once the
+//   ready                 {\"schema\":\"github-core-clone-01/ready/v1\",\"host\":…,\"port\":…}, written once the
 //                         env listens (the harness waits for it before starting the entry)
 //   export/state.json     the run-invariant bits: version, working, every check's 0|1, the counts and
 //                         the perf tiers (StateFile below), with no times, ports or random ids
@@ -41,7 +41,7 @@
 // This module imports nothing (a sealed bundle inlines it whole) and touches no Node-only API: timers,
 // AbortSignal and TextEncoder are the only globals used, and only where Node 22 and a browser both
 // have them.
-
+//
 // ---------------------------------------------------------------- errors
 
 /** A contract violation or an unusable value: never thrown for an entry's own behaviour. */
@@ -97,11 +97,11 @@ export function stateDirOf(env: Readonly<Record<string, string | undefined>>): s
 
 // ---------------------------------------------------------------- routes and endpoints
 
-/** The entry POSTs {"port":N} here. */
+/** The entry POSTs {\"port\":N} here. */
 export const REGISTER_PATH = '/register';
-/** The entry long-polls this until {"done":true}. */
+/** The entry long-polls this until {\"done\":true}. */
 export const DONE_PATH = '/done';
-/** The entry answers 200 {"ok":true} here; the env's boot check calls it twice. */
+/** The entry answers 200 {\"ok\":true} here; the env's boot check calls it twice. */
 export const HEALTHZ_PATH = '/healthz';
 /** The GitHub REST v3 prefix on the entry. */
 export const API_PREFIX = '/api/v3';
@@ -559,7 +559,7 @@ export interface StateCounts {
  * and the same seed. No times, no ports, no random ids. `checks` holds every check id with its 0|1 (a
  * check that did not run, at the deadline, is 0); `counts` is derived from it; `perfTiers` is the one
  * timing-derived field, kept coarse (0..4) as the settled shape requires; `notes` names fixed causes
- * ("no register before the boot deadline") and holds no timings.
+ * (\"no register before the boot deadline\") and holds no timings.
  */
 export interface StateFile {
   readonly version: typeof STATE_VERSION;
@@ -716,7 +716,7 @@ export function emptyCounts(groupCounts: Readonly<Record<string, number>>, total
 
 /**
  * The export a boot failure writes: every check 0, working 0, counts zeroed, a fixed note. It is the
- * "clear export (all checks failed, working=0)" of the contract, so a trial that never got an entry is
+ * \"clear export (all checks failed, working=0)\" of the contract, so a trial that never got an entry is
  * scored 0 rather than void.
  */
 export function bootFailureState(checkIds: readonly CheckId[], groupCounts: Readonly<Record<string, number>>, notes: readonly string[] = [BOOT_FAILED_NOTE]): StateFile {

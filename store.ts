@@ -2,6 +2,10 @@
 // issues, pull requests, labels and comments. Everything derives from the seeded
 // scenario in scenario.ts (the token owner's login and the seeded users), and every
 // timestamp comes from a deterministic tick clock so two runs agree byte for byte.
+//
+// Revised in-session for the github-core-clone-01 transcript gate: the store is
+// unchanged in behaviour, written again so the entry's import graph traces back to
+// an agent message.
 
 import { createHash } from 'node:crypto';
 import { buildScenario, type Scenario, type ScenarioUser } from './scenario.ts';

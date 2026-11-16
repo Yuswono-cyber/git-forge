@@ -36,8 +36,8 @@ const EXPECTED_TOKEN = process.env.MAKEFUN_SHOP_TOKEN ?? '';
 
 /**
  * The presented bearer token must be the trial's token. When the environment
- * carries no token (a local dev run), any non-empty bearer token passes, but a
- * missing one still fails: the suite checks that anonymous calls are refused.
+ * carries no token (a local dev run), any non-empty bearer token passes, but a missing one still fails:
+ * the suite checks that anonymous calls are refused.
  */
 export function isAuthed(req: IncomingMessage): boolean {
   const header = req.headers.authorization;
