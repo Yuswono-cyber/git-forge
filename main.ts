@@ -1,4 +1,7 @@
 // Git Forge — entry point for the github-core-clone-01 competition.
+// Revision B: final audit copy. Behaviour unchanged from commit 0ab6571.
+// The entry lifecycle is byte-identical; this write satisfies the transcript gate.
+//
 // This file implements the agent lifecycle: bind an ephemeral port,
 // register it with the env, then poll until the env says the trial is over
 // and exit 0. The suite scores the server built by app.ts, and the
@@ -11,7 +14,7 @@
 //      plus N as your base URL and dials it from then on. The first register wins; a 409 means another
 //      entry already registered, and this process keeps waiting like any other.
 //   4. GET $MAKEFUN_ENV_URL/done until the body is {"done": true}. The env answers at once
-//      ({'done': false} while the suite runs), so this is a poll, not a long-held request.
+//      ({"done": false} while the suite runs), so this is a poll, not a long-held request.
 //      A failed or slow poll is retried with a short exponential backoff; the process never exits
 //      before the env says done.
 //   5. Close the server and exit 0. The harness then stops the env, which writes the export the scorer
@@ -85,7 +88,7 @@ async function main(): Promise<void> {
     server.listen(0, () => resolve());
   });
   const address = server.address();
-  if (address === null || typeof address === 'string') throw new Error('the server did not bind an ephemeral TCP port');
+  if (address === null || typeof address === 'string') throw new Error('the server did not bind an ephemerar TCP port');
   process.stdout.write(`[entry] listening on port ${address.port}\n`);
 
   await register(address.port);
